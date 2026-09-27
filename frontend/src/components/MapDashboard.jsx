@@ -9,8 +9,8 @@ export default function MapDashboard({ data, rainfallMultiplier, setRainfallMult
   const [selectedHabitation, setSelectedHabitation] = useState(null);
   const [selectedSite, setSelectedSite] = useState(null);
   
-  // Center roughly on Wayanad
-  const center = [11.55, 76.1];
+  // Center roughly on Kerala
+  const center = [10.5, 76.5];
   
   const getPriorityColor = (tier) => {
     switch (tier) {
@@ -31,7 +31,7 @@ export default function MapDashboard({ data, rainfallMultiplier, setRainfallMult
     <div className="relative w-full h-full flex">
       {/* Map Area */}
       <div className="flex-1 relative z-0">
-        <MapContainer center={center} zoom={11} style={{ height: '100%', width: '100%' }}>
+        <MapContainer center={center} zoom={7} style={{ height: '100%', width: '100%' }}>
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -90,7 +90,7 @@ export default function MapDashboard({ data, rainfallMultiplier, setRainfallMult
                     pathOptions={{ 
                       color: 'white',
                       weight: 2,
-                      fillColor: '#3b82f6', 
+                      fillColor: site.ecological_risk_flag ? '#9333ea' : '#3b82f6', // purple if risky, else blue
                       fillOpacity: 0.9 
                     }}
                     eventHandlers={{
@@ -100,7 +100,10 @@ export default function MapDashboard({ data, rainfallMultiplier, setRainfallMult
                       }
                     }}
                   >
-                    <Tooltip>{site.name} (Suitability: {site.suitability.final_score})</Tooltip>
+                    <Tooltip>
+                      {site.name} {site.ecological_risk_flag && "⚠️"} 
+                      <br/>Suitability: {site.suitability.final_score}
+                    </Tooltip>
                   </CircleMarker>
                 ))}
               </React.Fragment>
@@ -123,6 +126,9 @@ export default function MapDashboard({ data, rainfallMultiplier, setRainfallMult
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-sm"></div> Candidate Relocation Site
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-purple-600 rounded-full border-2 border-white shadow-sm"></div> Risky Relocation Site ⚠️
             </div>
             <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-200">
               <div className="w-4 h-3 bg-red-500/40 border border-red-500"></div> High Hazard Zone
@@ -182,11 +188,11 @@ export default function MapDashboard({ data, rainfallMultiplier, setRainfallMult
                 <span className="text-gray-600">Exposure Score:</span>
                 <span className="font-bold">{selectedHabitation.simulated_hazard_exposure}/100</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col gap-1">
                 <span className="text-gray-600">Past Events:</span>
-                <span className="font-bold">{selectedHabitation.hazard_history}</span>
+                <span className="font-bold text-red-700 bg-red-50 p-2 rounded text-xs">{selectedHabitation.history_details}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between border-t border-gray-100 pt-2 mt-2">
                 <span className="text-gray-600">Overall Priority Score:</span>
                 <span className="font-bold">{selectedHabitation.priority.priority_score}/100</span>
               </div>
@@ -197,17 +203,22 @@ export default function MapDashboard({ data, rainfallMultiplier, setRainfallMult
             </h3>
             <div className="space-y-4">
               {selectedHabitation.recommended_sites.map((rec, idx) => (
-                <div key={idx} className="border border-gray-200 rounded p-3 bg-blue-50/50">
+                <div key={idx} className={`border rounded p-3 ${rec.rejected ? 'border-red-200 bg-red-50/50 opacity-75' : 'border-gray-200 bg-blue-50/50'}`}>
                   <div className="flex justify-between items-start mb-2">
-                    <div className="font-bold text-blue-900">{idx + 1}. {rec.site_name}</div>
+                    <div className={`font-bold ${rec.rejected ? 'text-red-800 line-through' : 'text-blue-900'}`}>{idx + 1}. {rec.site_name}</div>
                     <div className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-bold">
                       {rec.distance_km} km away
                     </div>
                   </div>
+                  {rec.rejected && (
+                    <div className="text-xs font-bold text-red-600 mb-2 p-1 bg-red-100 rounded">
+                      {rec.rejectionReason}
+                    </div>
+                  )}
                   <div className="text-sm text-gray-700 space-y-1">
                     <div className="flex justify-between">
                       <span>Match Score:</span>
-                      <span className="font-bold">{rec.match_score}/100</span>
+                      <span className="font-bold">{rec.rejected ? 'N/A' : `${rec.match_score}/100`}</span>
                     </div>
                     <div className="flex justify-between text-xs text-gray-500">
                       <span>Site Suitability:</span>
