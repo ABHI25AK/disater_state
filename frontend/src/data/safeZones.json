@@ -1,0 +1,47 @@
+[
+  {
+    "id": "sz1",
+    "villageId": "v1",
+    "name": "Meppadi Safe Relocation Area",
+    "lat": 11.5543,
+    "lng": 76.1415,
+    "areaSqM": 120000,
+    "capacityThresholdSqM": 40
+  },
+  {
+    "id": "sz2",
+    "villageId": "v2",
+    "name": "Vythiri Inner Plateau",
+    "lat": 11.5450,
+    "lng": 76.0500,
+    "areaSqM": 80000,
+    "capacityThresholdSqM": 40
+  },
+  {
+    "id": "sz3",
+    "villageId": "v3",
+    "name": "Ambalavayal Block",
+    "lat": 11.6250,
+    "lng": 76.2100,
+    "areaSqM": 150000,
+    "capacityThresholdSqM": 40
+  },
+  {
+    "id": "sz4",
+    "villageId": "v4",
+    "name": "Kalpetta Plains",
+    "lat": 11.6200,
+    "lng": 76.0900,
+    "areaSqM": 200000,
+    "capacityThresholdSqM": 40
+  },
+  {
+    "id": "sz5",
+    "villageId": "v5",
+    "name": "Kalpetta High Ground",
+    "lat": 11.6300,
+    "lng": 76.0850,
+    "areaSqM": 90000,
+    "capacityThresholdSqM": 40
+  }
+]
